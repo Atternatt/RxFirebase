@@ -11,28 +11,31 @@ import io.reactivex.Single
  */
 
 inline fun <reified T> Query.observeSingleValue(): Single<T> {
-    return  Single.create { emitter ->
-        if(!emitter.isDisposed) {
-            object: ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    if (!emitter.isDisposed) {
-                        emitter.onError(p0.toException())
+    return Single.defer<T> {
+        Single.create { emitter ->
+            if (!emitter.isDisposed) {
+                object : ValueEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+                        if (!emitter.isDisposed) {
+                            emitter.onError(p0.toException())
+                        }
                     }
-                }
 
-                override fun onDataChange(p0: DataSnapshot) {
-                    if(!emitter.isDisposed) {
-                        val value: T? = p0.getValue(T::class.java)
-                        value?.let {
-                            emitter.onSuccess(p0.getValue(T::class.java))
-                        } ?: emitter.onError(kotlin.ClassCastException("Object emitted is not the same class as ${T::class.simpleName}"))
+                    override fun onDataChange(p0: DataSnapshot) {
+                        if (!emitter.isDisposed) {
+                            val value: T? = p0.getValue(T::class.java)
+                            value?.let {
+                                emitter.onSuccess(p0.getValue(T::class.java))
+                            } ?: emitter.onError(kotlin.ClassCastException("Object emitted is not the same class as ${T::class.simpleName}"))
+                        }
                     }
-                }
 
-            }.let {
-                emitter.setCancellable { this.removeEventListener(it)}
-                this.addListenerForSingleValueEvent(it)
+                }.let {
+                    emitter.setCancellable { this.removeEventListener(it) }
+                    this.addListenerForSingleValueEvent(it)
+                }
             }
+
         }
 
     }
