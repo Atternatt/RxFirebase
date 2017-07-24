@@ -2,8 +2,6 @@ apply plugin: 'com.android.library'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
-
 apply plugin: 'com.novoda.bintray-release'
 
 android {
@@ -16,6 +14,10 @@ android {
 
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 
     defaultConfig {
         minSdkVersion 16
@@ -37,13 +39,40 @@ android {
     }
 }
 
+tasks.withType(Test) {
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
+}
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion '0.7.8'
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled true
+        csv.enabled false
+    }
+
+    classDirectories = fileTree(
+            dir: 'build/classes/main/rxfirebase',
+    )
+
+    sourceDirectories = files('src/main/kotlin')
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    testImplementation 'junit:junit:4.12'
 
     //firebase
     provided "com.google.firebase:firebase-database:$firebaseVersion"
@@ -51,12 +80,19 @@ dependencies {
     //rx
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     provided "io.reactivex.rxjava2:rxkotlin:$rxJavaVersion"
+
+    //test
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    testImplementation "org.assertj:assertj-core:$asseertjVersion"
+
 }
 
 publish {
-    userOrg = 'iranon'
     groupId = 'com.m2f'
-    artifactId = 'rxfirebase'
+    userOrg = POM_DEVELOP_ID
+    artifactId = POM_ARTIFACT_ID
     publishVersion = '0.0.1'
     desc = 'RxJava2 Firebase Integartion Made in Kotlin'
     website = 'https://github.com/Atternatt/RxFirebase'
