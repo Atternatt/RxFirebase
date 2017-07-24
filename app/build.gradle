@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'com.novoda.bintray-release'
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
@@ -30,4 +32,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.0.0-beta2'
     testImplementation 'junit:junit:4.12'
+}
+
+publish {
+    userOrg = 'iranon'
+    groupId = 'com.m2f'
+    artifactId = 'rxfirebase'
+    publishVersion = '0.0.1'
+    desc = 'RxJava2 Firebase Integartion Made in Kotlin'
+    website = 'https://github.com/Atternatt/RxFirebase'
 }
