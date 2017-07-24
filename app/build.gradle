@@ -88,6 +88,7 @@ dependencies {
     testImplementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     testImplementation "org.assertj:assertj-core:$asseertjVersion"
     testImplementation "io.kotlintest:kotlintest:$kotlinTestVersion"
+    testImplementation "com.google.firebase:firebase-database:$firebaseVersion"
 
 }
 
