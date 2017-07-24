@@ -60,12 +60,21 @@ task codeCoverageReport(type: JacocoReport) {
         csv.enabled false
     }
 
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
     classDirectories = fileTree(
             dir: 'build/classes/main/rxfirebase',
     )
 
     sourceDirectories = files('src/main/kotlin')
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }
 
 dependencies {
