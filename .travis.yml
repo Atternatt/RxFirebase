@@ -12,6 +12,10 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
+android:
+  components:
+    - tools
+    - build-tools-26.0.0
   licenses:
       - 'android-sdk-preview-license-.+'
       - 'android-sdk-license-.+'
