@@ -14,5 +14,8 @@ after_success:
 
 android:
   components:
-    - tools
-    - build-tools-26.0.0
+        - tools
+        - platform-tools
+        - tools
+        - build-tools-26.0.0
+        - android-26
