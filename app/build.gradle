@@ -44,6 +44,9 @@ dependencies {
     })
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
+
+    //firebase
+    provided 'com.google.firebase:firebase-database:11.0.2'
 }
 
 publish {
