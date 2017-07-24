@@ -46,7 +46,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     //firebase
-    provided 'com.google.firebase:firebase-database:11.0.2'
+    provided "com.google.firebase:firebase-database:$firebaseVersion"
+
+    //rx
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    provided "io.reactivex.rxjava2:rxkotlin:$rxJavaVersion"
 }
 
 publish {
