@@ -17,6 +17,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
     defaultConfig {
@@ -86,6 +87,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     testImplementation "org.assertj:assertj-core:$asseertjVersion"
+    testImplementation "io.kotlintest:kotlintest:$kotlinTestVersion"
 
 }
 

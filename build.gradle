@@ -11,6 +11,7 @@ buildscript {
         asseertjVersion = '1.7.1'
         junitVersion = '4.12'
         espressoVersion = '2.2.2'
+        kotlinTestVersion = '2.0.3'
     }
     repositories {
         google()
