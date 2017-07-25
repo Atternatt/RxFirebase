@@ -25,12 +25,56 @@ buildscript {
     }
 }
 
-allprojects {
+subprojects { project ->
+
+    group = GROUP
+    version = VERSION_NAME
+
     repositories {
         google()
         jcenter()
+        maven { url 'https://kotlin.bintray.com/kotlinx' }
+        maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
         mavenCentral()
     }
+
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion '0.7.8'
+    }
+
+    task codeCoverageReport(type: JacocoReport) {
+        reports {
+            xml.enabled true
+            xml.destination "${buildDir}/reports/jacoco/report.xml"
+            html.enabled true
+            csv.enabled false
+        }
+
+        classDirectories = fileTree(
+                dir: 'build/classes/main/kategory',
+        )
+
+        sourceDirectories = files('src/main/kotlin')
+        executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    }
+
+    apply plugin: 'com.jfrog.bintray'
+    bintray {
+        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+        configurations = ['archives']
+        pkg {
+            repo = 'maven'
+            name = ARTIFACT_ID
+            userOrg = DEVELOPER_ID
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
 task clean(type: Delete) {

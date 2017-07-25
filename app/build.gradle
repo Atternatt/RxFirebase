@@ -1,8 +1,12 @@
 apply plugin: 'com.android.library'
-
 apply plugin: 'kotlin-android'
 
-apply plugin: 'com.novoda.bintray-release'
+
+tasks.withType(Test) {
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
+}
 
 android {
 
@@ -40,48 +44,7 @@ android {
     }
 }
 
-tasks.withType(Test) {
-    testLogging {
-        events "started", "passed", "skipped", "failed"
-    }
-}
-
-apply plugin: 'jacoco'
-
-jacoco {
-    toolVersion '0.7.8'
-}
-
-task codeCoverageReport(type: JacocoReport) {
-    reports {
-        xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
-        html.enabled true
-        csv.enabled false
-    }
-
-    subprojects.each {
-        sourceSets it.sourceSets.main
-    }
-
-    classDirectories = fileTree(
-            dir: 'build/classes/main/rxfirebase',
-    )
-
-    sourceDirectories = files('src/main/kotlin')
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-}
-
-codeCoverageReport.dependsOn {
-    subprojects*.test
-}
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     //firebase
@@ -101,11 +64,11 @@ dependencies {
 
 }
 
-publish {
+/*publish {
     groupId = 'com.m2f'
     userOrg = POM_DEVELOP_ID
     artifactId = POM_ARTIFACT_ID
     publishVersion = '0.0.1'
     desc = 'RxJava2 Firebase Integartion Made in Kotlin'
     website = 'https://github.com/Atternatt/RxFirebase'
-}
+}*/
