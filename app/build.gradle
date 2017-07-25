@@ -12,8 +12,8 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
