@@ -25,8 +25,8 @@ inline fun <reified T> Query.observeSingleValue(): Maybe<T> {
                         if (p0.exists()) {
                             val value: T? = p0.getValue(T::class.java)
                             value?.let {
-                                emitter.onSuccess(p0.getValue(T::class.java))
-                            } ?: emitter.onError(kotlin.ClassCastException("Object emitted is not the same class as ${T::class.simpleName}"))
+                                emitter.onSuccess(it)
+                            } ?: emitter.onError(kotlin.ClassCastException("Object emitted is not the same class as ${T::class}"))
                         } else {
                             emitter.onComplete()
                         }
