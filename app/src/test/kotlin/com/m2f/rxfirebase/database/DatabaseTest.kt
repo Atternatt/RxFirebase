@@ -1,6 +1,8 @@
-package com.m2f.rxfirebase
+package com.m2f.rxfirebase.database
 
 import com.google.firebase.database.*
+import com.m2f.rxfirebase.TestData
+import com.m2f.rxfirebase.WrongType
 import io.kotlintest.mock.mock
 import io.reactivex.observers.TestObserver
 import org.junit.Before
@@ -38,7 +40,7 @@ class DatabaseTest {
     }
 
 
-    @Test fun observeSingleValueReturnJustOneValue() {
+    @Test fun `observe single value return a single object and completes`() {
 
 
         val subs: TestObserver<TestData> = TestObserver()
@@ -59,7 +61,7 @@ class DatabaseTest {
 
     }
 
-    @Test fun observeSingleValueWithoutData() {
+    @Test fun `observe value without data completes emitting nothing`() {
 
         val noData: DataSnapshot = mock()
         `when`(noData.exists()).thenReturn(false)
@@ -81,7 +83,7 @@ class DatabaseTest {
 
     }
 
-    @Test fun observeSingleValueWithWrongtype() {
+    @Test fun `observe single value with wrong data emits a cast exception`() {
 
         val subs: TestObserver<WrongType> = TestObserver()
         mockDatabase
@@ -99,7 +101,7 @@ class DatabaseTest {
 
     }
 
-    @Test fun observeSingleValue_Disconnected() {
+    @Test fun `observe single value when database is disconnected emits a DatabaseException without completing`() {
         val subs: TestObserver<TestData> = TestObserver()
         mockDatabase
                 .observeSingleValue<TestData>()
@@ -115,7 +117,7 @@ class DatabaseTest {
         subs.dispose()
     }
 
-    @Test fun observeSingleValue_Failed() {
+    @Test fun `observe single value when database failed emits a DatabaseException without completing`() {
         val subs: TestObserver<TestData> = TestObserver()
         mockDatabase
                 .observeSingleValue<TestData>()

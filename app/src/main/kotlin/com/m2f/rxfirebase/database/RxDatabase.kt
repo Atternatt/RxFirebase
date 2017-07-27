@@ -1,4 +1,4 @@
-package com.m2f.rxfirebase
+package com.m2f.rxfirebase.database
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -10,7 +10,7 @@ import io.reactivex.Maybe
  * Created by marc on 24/7/17.
  */
 
-inline fun <reified T> Query.observeSingleValue(): Maybe<T> {
+internal inline fun <reified T> Query.observeSingleValue(): Maybe<T> {
     return Maybe.create { emitter ->
         if (!emitter.isDisposed) {
             object : ValueEventListener {
@@ -42,3 +42,5 @@ inline fun <reified T> Query.observeSingleValue(): Maybe<T> {
     }
 
 }
+
+

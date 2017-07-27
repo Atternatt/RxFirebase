@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
+apply plugin: 'jacoco-android'
+apply plugin: 'com.novoda.bintray-release'
 
 tasks.withType(Test) {
     testLogging {
@@ -45,7 +46,6 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     //firebase
     implementation "com.google.firebase:firebase-database:$firebaseVersion"
@@ -64,11 +64,11 @@ dependencies {
 
 }
 
-/*publish {
+publish {
     groupId = 'com.m2f'
-    userOrg = POM_DEVELOP_ID
-    artifactId = POM_ARTIFACT_ID
+    userOrg = DEVELOPER_ID
+    artifactId = ARTIFACT_ID
     publishVersion = '0.0.1'
     desc = 'RxJava2 Firebase Integartion Made in Kotlin'
     website = 'https://github.com/Atternatt/RxFirebase'
-}*/
+}
