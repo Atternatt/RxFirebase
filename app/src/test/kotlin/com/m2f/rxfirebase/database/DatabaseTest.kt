@@ -3,8 +3,10 @@ package com.m2f.rxfirebase.database
 import com.google.firebase.database.*
 import com.m2f.rxfirebase.TestData
 import com.m2f.rxfirebase.WrongType
+import exceptions.ElementNotExistsException
 import io.kotlintest.mock.mock
 import io.reactivex.observers.TestObserver
+import io.reactivex.subscribers.TestSubscriber
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,16 +29,11 @@ class DatabaseTest {
 
     private val testData = TestData()
 
-    private val testDataList: List<TestData> = listOf(testData)
-
-    private val testDataMap: Map<String, TestData> = mapOf("key" to testData)
-
     @Before fun setup() {
 
         `when`(mockDataSnapshot.exists()).thenReturn(true)
         `when`(mockDataSnapshot.getValue(TestData::class.java)).thenReturn(testData)
-        //`when`(mockDataSnapshot.key).thenReturn("key")
-        //`when`(mockDataSnapshot.children).thenReturn(listOf(mockDataSnapshot))
+        `when`(mockDataSnapshot.key).thenReturn("key")
     }
 
 
@@ -61,7 +58,7 @@ class DatabaseTest {
 
     }
 
-    @Test fun `observe value without data completes emitting nothing`() {
+    @Test fun `observe single value without data completes emitting nothing`() {
 
         val noData: DataSnapshot = mock()
         `when`(noData.exists()).thenReturn(false)
@@ -133,35 +130,164 @@ class DatabaseTest {
         subs.dispose()
     }
 
-    @Test fun testSingleValueEvent() {
+    @Test fun `observe value return at least one object and doesn't complete`() {
+        //with
+        val subs = TestSubscriber<TestData>()
+        mockDatabase
+                .observeValueEvent<TestData>()
+                .subscribe(subs)
+
+        //when
+        val argument: ArgumentCaptor<ValueEventListener> = ArgumentCaptor.forClass(ValueEventListener::class.java)
+        verify(mockDatabase).addValueEventListener(argument.capture())
+        argument.value.onDataChange(mockDataSnapshot)
+
+        //then
+        subs.assertNoErrors()
+                .assertNotComplete()
+                .assertValueCount(1)
+                .assertValue { it.value == testData.value }
+        subs.dispose()
 
     }
 
-    @Test fun testObserveValueEventList() {
+    @Test fun `observe value without data emitts a ElementNotExistsException without completing`() {
+
+        val noData: DataSnapshot = mock()
+        `when`(noData.exists()).thenReturn(false)
+
+        val subs = TestSubscriber<TestData>()
+        mockDatabase
+                .observeValueEvent<TestData>()
+                .subscribe(subs)
+
+        val argument: ArgumentCaptor<ValueEventListener> = ArgumentCaptor.forClass(ValueEventListener::class.java)
+        verify(mockDatabase).addValueEventListener(argument.capture())
+        argument.value.onDataChange(noData)
+
+        subs.assertError(ElementNotExistsException::class.java)
+                .assertNoValues()
+                .assertNotComplete()
+        subs.dispose()
+    }
+
+    @Test fun `observe child event emits a ChildEvent with ADDED EventType when added something`() {
+        //with
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
+
+        //when
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onChildAdded(mockDataSnapshot, "root")
+
+        //then
+        subs.assertNoErrors()
+                .assertNotComplete()
+                .assertValueCount(1)
+                .assertValue { it.eventType == ChildEvent.EventType.ADDED }
+        subs.dispose()
+    }
+
+    @Test fun `observe child event emits a ChildEvent with CHANGED EventType when changed something`() {
+        //with
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
+
+        //when
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onChildChanged(mockDataSnapshot, "root")
+
+        //then
+        subs.assertNoErrors()
+                .assertNotComplete()
+                .assertValueCount(1)
+                .assertValue { it.eventType == ChildEvent.EventType.CHANGED }
+        subs.dispose()
 
     }
 
-    @Test fun testObserveValuesMap() {
+    @Test fun `observe child event emits a ChildEvent with REMOVED EventType when removed something`() {
+        //with
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
 
+        //when
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onChildRemoved(mockDataSnapshot)
+
+        //then
+        subs.assertNoErrors()
+                .assertNotComplete()
+                .assertValueCount(1)
+                .assertValue { it.eventType == ChildEvent.EventType.REMOVED }
+        subs.dispose()
     }
 
-    @Test fun testObserveChildEvent_Added() {
+    @Test fun `observe child event emits a ChildEvent with MOVED EventType when moved something`() {
+        //with
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
 
+        //when
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onChildMoved(mockDataSnapshot, "root")
+
+        //then
+        subs.assertNoErrors()
+                .assertNotComplete()
+                .assertValueCount(1)
+                .assertValue { it.eventType == ChildEvent.EventType.MOVED }
+        subs.dispose()
     }
 
-    @Test fun testObserveChildEvent_Changed() {
+    @Test fun `observe for child events receive a DatabaseException if query is cancelled`() {
+        //with
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
 
+        //when
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onCancelled(DatabaseError.zzbU(DatabaseError.DISCONNECTED))
+
+        //then
+        subs.assertError(DatabaseException::class.java)
+                .assertNoValues()
+                .assertNotComplete()
+        subs.dispose()
     }
 
-    @Test fun testObserveChildEvent_Removed() {
+    @Test fun `observe child events without data emitts a ElementNotExistsException without completing`() {
 
-    }
+        val noData: DataSnapshot = mock()
+        `when`(noData.exists()).thenReturn(false)
 
-    @Test fun testObserveChildEvent_Moved() {
+        val subs = TestSubscriber<ChildEvent<TestData>>()
+        mockDatabase
+                .observeChildEvents<TestData>()
+                .subscribe(subs)
 
-    }
+        val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
+        verify(mockDatabase).addChildEventListener(argument.capture())
+        argument.value.onChildAdded(noData, "root")
 
-    @Test fun testObserveChildEvent_Cancelled() {
-
+        subs.assertError(ElementNotExistsException::class.java)
+                .assertNoValues()
+                .assertNotComplete()
+        subs.dispose()
     }
 }
