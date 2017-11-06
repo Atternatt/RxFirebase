@@ -9,6 +9,14 @@ tasks.withType(Test) {
     }
 }
 
+jacocoAndroidUnitTestReport {
+    excludes += ['**/R.class',
+                 '**/R$*.class',
+                 '**/BuildConfig.*',
+                 '**/Manifest*.*',
+                 'com/android/**/*.class']
+}
+
 android {
 
     packagingOptions {
@@ -17,8 +25,8 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -27,7 +35,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -49,6 +57,9 @@ dependencies {
 
     //firebase
     implementation "com.google.firebase:firebase-database:$firebaseVersion"
+
+    // Firestore
+    implementation "com.google.firebase:firebase-firestore:$firebaseVersion"
 
     //rx
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"

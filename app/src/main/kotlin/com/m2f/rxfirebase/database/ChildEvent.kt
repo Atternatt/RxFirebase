@@ -16,16 +16,15 @@ data class ChildEvent<out Value>(val key: String,
     }
 
     override fun equals(other: Any?): Boolean {
-        if(this== other) return true
-        if(other == null || this::class.java != other::class.java) return false
+        if (this == other) return true
+        if (other == null || this::class.java != other::class.java) return false
 
         val that = other as ChildEvent<*>
 
-        if(eventType != that.eventType) return false
-        if(value != that.value) return false
+        if (eventType != that.eventType) return false
+        if (value != that.value) return false
         return previousChildName != that.previousChildName
     }
-
 
 
     override fun hashCode(): Int {

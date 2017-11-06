@@ -1,6 +1,8 @@
 package com.m2f.rxfirebase.database
 
 import com.google.firebase.database.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.m2f.rxfirebase.TestData
 import com.m2f.rxfirebase.WrongType
 import exceptions.ElementNotExistsException
@@ -24,6 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner
 class DatabaseTest {
 
     @Mock private lateinit var mockDatabase: DatabaseReference
+
+    @Mock private lateinit var mockDocumentReference: DocumentReference
 
     @Mock private lateinit var mockDataSnapshot: DataSnapshot
 
@@ -106,7 +110,7 @@ class DatabaseTest {
 
         val argument = ArgumentCaptor.forClass(ValueEventListener::class.java)
         verify(mockDatabase).addListenerForSingleValueEvent(argument.capture())
-        argument.value.onCancelled(DatabaseError.zzbU(DatabaseError.DISCONNECTED))
+        argument.value.onCancelled(DatabaseError.zzfx(DatabaseError.DISCONNECTED))
 
         subs.assertError(DatabaseException::class.java)
                 .assertNoValues()
@@ -122,7 +126,7 @@ class DatabaseTest {
 
         val argument = ArgumentCaptor.forClass(ValueEventListener::class.java)
         verify(mockDatabase).addListenerForSingleValueEvent(argument.capture())
-        argument.value.onCancelled(DatabaseError.zzbU(DatabaseError.OPERATION_FAILED))
+        argument.value.onCancelled(DatabaseError.zzfx(DatabaseError.OPERATION_FAILED))
 
         subs.assertError(DatabaseException::class.java)
                 .assertNoValues()
@@ -262,7 +266,7 @@ class DatabaseTest {
         //when
         val argument: ArgumentCaptor<ChildEventListener> = ArgumentCaptor.forClass(ChildEventListener::class.java)
         verify(mockDatabase).addChildEventListener(argument.capture())
-        argument.value.onCancelled(DatabaseError.zzbU(DatabaseError.DISCONNECTED))
+        argument.value.onCancelled(DatabaseError.zzfx(DatabaseError.DISCONNECTED))
 
         //then
         subs.assertError(DatabaseException::class.java)
